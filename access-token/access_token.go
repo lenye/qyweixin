@@ -19,14 +19,9 @@ const (
 
 //凭证
 type AccessToken struct {
-	AccessToken string `json:"access_token"` //获取到的凭证
-	ExpiresIn   int64  `json:"expires_in"`   //凭证有效时间，单位：秒
-	NextGet     int64  //下次取凭证时间
-}
-
-type WeiXinQyAccessTokenEventChan struct {
-	AccessToken string
-	Err         error
+	Ticket    string `json:"access_token"` //获取到的凭证
+	ExpiresIn int64  `json:"expires_in"`   //凭证有效时间，单位：秒
+	NextGet   int64  //下次取凭证时间
 }
 
 type AccessTokenClient struct {
@@ -67,7 +62,7 @@ func (p *AccessTokenClient) getAccessToken(appId, appSecret string) (*AccessToke
 	var newAccessToken AccessToken
 	err = json.Unmarshal(respBody, &newAccessToken)
 	if err != nil {
-		accessToken.AccessToken = ""
+		accessToken.Ticket = ""
 		accessToken.ExpiresIn = 0
 		p.SwapTicket(accessToken)
 		return accessToken, errors.Wrap(err, "getAccessToken json.Unmarshal")
@@ -88,7 +83,7 @@ func (p *AccessTokenClient) getAccessToken(appId, appSecret string) (*AccessToke
 	glog.Infof("old access_token=%+v", accessToken)
 	glog.Infof("new access_token=%+v", newAccessToken)
 
-	accessToken.AccessToken = newAccessToken.AccessToken
+	accessToken.Ticket = newAccessToken.Ticket
 	accessToken.ExpiresIn = newAccessToken.ExpiresIn
 	accessToken.NextGet = newAccessToken.NextGet
 

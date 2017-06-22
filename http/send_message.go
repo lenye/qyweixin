@@ -28,5 +28,5 @@ func (s *HttpServer) sendMessage(w http.ResponseWriter, req *http.Request, ps ht
 		return nil, Err{http.StatusBadRequest, "MSG_EMPTY"}
 	}
 	buf := bytes.NewBuffer(body)
-	return message.SendMessage(buf, s.ctx.app.accessTokenClient.Load().AccessToken, opts.HTTPClientConnectTimeout, opts.HTTPClientRequestTimeout)
+	return message.SendMessage(buf, s.ctx.app.accessTokenClient.Load().Ticket, opts.HTTPClientConnectTimeout, opts.HTTPClientRequestTimeout)
 }
