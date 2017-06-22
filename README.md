@@ -35,7 +35,8 @@
  
 ### 运行程序:
  
- qy-weixin -app_id=XXXXXXXXXXX -app_secret=XXXXXXXXXXX -logtostderr
+    qy-weixin -app_id=XXXXXXXXXXX -app_secret=XXXXXXXXXXX -logtostderr
+    
    
 ## 取access-token
 
@@ -46,6 +47,7 @@
         "expires_in": 7200,
         "create_at": "2017-06-22T14:56:40.3631589+08:00"
     }
+    
 
 ## 发消息
 
@@ -61,7 +63,15 @@
            "content" : "你的快递已到，请携带工卡前往邮件中心领取。\n出发前可查看<a href=\"http://work.weixin.qq.com\">邮件中心视频实况</a>，聪明避开排队。"
        }
     }
-
+    
+    
+    {
+        "errcode": 0,
+        "errmsg": "ok",
+        "invaliduser": ""
+    }
+    
+    
 ## License
 
  qyweixin is licensed under the [Apache License 2.0](https://github.com/lenye/qyweixin/blob/master/LICENSE).

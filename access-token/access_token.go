@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	retryInterval = 5 * time.Second //每隔5秒重试
+	retryInterval = 10 * time.Second //每隔5秒重试
 	tokenURL      = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s"
 )
 
@@ -36,7 +36,6 @@ func NewAccessTokenClient(connectTimeout time.Duration, requestTimeout time.Dura
 		Client:   http.NewHttpClient(connectTimeout, requestTimeout),
 		QuitChan: make(chan int),
 	}
-	p.Client.HttpDump = true
 	p.SwapTicket(&AccessToken{})
 	return p
 }

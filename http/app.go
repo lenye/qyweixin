@@ -52,7 +52,6 @@ func (p *QYWeiXinApp) Run() {
 	opts := p.getOption()
 
 	p.accessTokenClient = access_token.NewAccessTokenClient(opts.HTTPClientConnectTimeout, opts.HTTPClientRequestTimeout)
-	p.accessTokenClient.Client.HttpDump = true
 	p.waitGroup.Wrap(func() {
 		p.accessTokenClient.Loop(opts.AppID, opts.AppSecret)
 	})

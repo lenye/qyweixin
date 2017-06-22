@@ -52,14 +52,12 @@ func NewDeadlineTransport(connectTimeout time.Duration, requestTimeout time.Dura
 }
 
 type HttpClient struct {
-	HttpDump bool
-	c        *http.Client
+	c *http.Client
 }
 
 func NewHttpClient(connectTimeout time.Duration, requestTimeout time.Duration) *HttpClient {
 	transport := NewDeadlineTransport(connectTimeout, requestTimeout)
 	return &HttpClient{
-		HttpDump: true,
 		c: &http.Client{
 			Transport: transport,
 			Timeout:   requestTimeout,
@@ -78,11 +76,9 @@ func (p *HttpClient) HTTPGet(url string) ([]byte, error) {
 	req.ProtoMinor = 1
 	req.Header.Set("User-Agent", UserAgent)
 
-	if p.HttpDump {
-		reqDump, err = httputil.DumpRequest(req, p.HttpDump)
-		if err != nil {
-			glog.V(4).Info(errors.Wrap(err, "HTTPGet DumpRequest"))
-		}
+	reqDump, err = httputil.DumpRequest(req, true)
+	if err != nil {
+		glog.V(4).Info(errors.Wrap(err, "HTTPGet DumpRequest"))
 	}
 
 	httpResp, err := p.c.Do(req)
@@ -91,13 +87,11 @@ func (p *HttpClient) HTTPGet(url string) ([]byte, error) {
 	}
 	defer httpResp.Body.Close()
 
-	if p.HttpDump {
-		respDump, err = httputil.DumpResponse(httpResp, p.HttpDump)
-		if err != nil {
-			glog.V(4).Info(errors.Wrap(err, "HTTPGet DumpResponse"))
-		}
-		glog.V(4).Infof("---------- request -----------\n%s\n---------- response ----------\n%s", string(reqDump), string(respDump))
+	respDump, err = httputil.DumpResponse(httpResp, true)
+	if err != nil {
+		glog.V(4).Info(errors.Wrap(err, "HTTPGet DumpResponse"))
 	}
+	glog.V(4).Infof("---------- request -----------\n%s\n---------- response ----------\n%s", string(reqDump), string(respDump))
 
 	if httpResp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("http.Status: %s", httpResp.Status)
@@ -119,11 +113,9 @@ func (p *HttpClient) HTTPPostJSON(url string, body *bytes.Buffer) ([]byte, error
 	req.Header.Set("Content-Type", HTTPBodyTypeJSON)
 	req.Header.Set("Accept", HTTPBodyTypeJSON)
 
-	if p.HttpDump {
-		reqDump, err = httputil.DumpRequest(req, p.HttpDump)
-		if err != nil {
-			glog.V(4).Info(errors.Wrap(err, "HTTPGet DumpRequest"))
-		}
+	reqDump, err = httputil.DumpRequest(req, true)
+	if err != nil {
+		glog.V(4).Info(errors.Wrap(err, "HTTPGet DumpRequest"))
 	}
 
 	httpResp, err := p.c.Do(req)
@@ -132,13 +124,11 @@ func (p *HttpClient) HTTPPostJSON(url string, body *bytes.Buffer) ([]byte, error
 	}
 	defer httpResp.Body.Close()
 
-	if p.HttpDump {
-		respDump, err = httputil.DumpResponse(httpResp, p.HttpDump)
-		if err != nil {
-			glog.V(4).Info(errors.Wrap(err, "HTTPGet DumpResponse"))
-		}
-		glog.V(4).Infof("---------- request -----------\n%s\n---------- response ----------\n%s", string(reqDump), string(respDump))
+	respDump, err = httputil.DumpResponse(httpResp, true)
+	if err != nil {
+		glog.V(4).Info(errors.Wrap(err, "HTTPGet DumpResponse"))
 	}
+	glog.V(4).Infof("---------- request -----------\n%s\n---------- response ----------\n%s", string(reqDump), string(respDump))
 
 	if httpResp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("http.Status: %s", httpResp.Status)
