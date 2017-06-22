@@ -23,6 +23,7 @@ func NewHTTPServer(ctx *ContextApp) *HttpServer {
 		router: router,
 	}
 
+	router.Handle("GET", "/wx/qy/access-token", Decorate(s.accessToken, httpStatusLog, V1))
 	router.Handle("POST", "/wx/qy/send/message", Decorate(s.sendMessage, httpStatusLog, V1))
 
 	return s

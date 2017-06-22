@@ -19,9 +19,10 @@ const (
 
 //凭证
 type AccessToken struct {
-	Ticket    string `json:"access_token"` //获取到的凭证
-	ExpiresIn int64  `json:"expires_in"`   //凭证有效时间，单位：秒
-	NextGet   int64  //下次取凭证时间
+	Ticket    string    `json:"access_token"` //获取到的凭证
+	ExpiresIn int64     `json:"expires_in"`   //凭证有效时间，单位：秒
+	NextGet   int64     `json:"-"`            //下次取凭证时间
+	CreateAt  time.Time `json:"create_at"`    //时间
 }
 
 type AccessTokenClient struct {
@@ -60,6 +61,7 @@ func (p *AccessTokenClient) getAccessToken(appId, appSecret string) (*AccessToke
 	accessToken := p.Load()
 
 	var newAccessToken AccessToken
+	newAccessToken.CreateAt = time.Now()
 	err = json.Unmarshal(respBody, &newAccessToken)
 	if err != nil {
 		accessToken.Ticket = ""
@@ -86,6 +88,7 @@ func (p *AccessTokenClient) getAccessToken(appId, appSecret string) (*AccessToke
 	accessToken.Ticket = newAccessToken.Ticket
 	accessToken.ExpiresIn = newAccessToken.ExpiresIn
 	accessToken.NextGet = newAccessToken.NextGet
+	accessToken.CreateAt = newAccessToken.CreateAt
 
 	p.SwapTicket(accessToken)
 	return accessToken, nil
