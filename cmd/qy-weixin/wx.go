@@ -25,7 +25,7 @@ func main() {
 	defer glog.Flush()
 
 	if opts.AppID == "" || opts.AppSecret == "" {
-		glog.Fatal("missing app-id or app-secret")
+		glog.Exit("missing app-id or app-secret")
 	}
 	opts.MaxMsgSize = 3 * 1024
 	app := http.NewQYWeiXinApp(&opts)
