@@ -78,6 +78,6 @@ func (p *QYWeiXinApp) Run() {
 	if httpListener != nil {
 		httpListener.Close()
 	}
-	glog.Info("quitChan")
+	glog.Info("exit")
 	p.waitGroup.Wait()
 }
