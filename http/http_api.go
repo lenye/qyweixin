@@ -38,9 +38,9 @@ func V1(f APIHandler) APIHandler {
 func RespondV1(w http.ResponseWriter, code int, data interface{}) {
 	var response []byte
 	var err error
-	var isJSON bool
 
 	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	if code == 200 {
 		switch data.(type) {
@@ -51,7 +51,6 @@ func RespondV1(w http.ResponseWriter, code int, data interface{}) {
 		case nil:
 			response = []byte{}
 		default:
-			isJSON = true
 			response, err = json.Marshal(data)
 			if err != nil {
 				code = 500
@@ -61,12 +60,7 @@ func RespondV1(w http.ResponseWriter, code int, data interface{}) {
 	}
 
 	if code != 200 {
-		isJSON = true
 		response = []byte(fmt.Sprintf(`{"message":"%s"}`, data))
-	}
-
-	if isJSON {
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	}
 
 	w.WriteHeader(code)
