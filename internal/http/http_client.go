@@ -115,7 +115,7 @@ func (p *HttpClient) HTTPPostJSON(url string, body *bytes.Buffer) ([]byte, error
 
 	reqDump, err = httputil.DumpRequest(req, true)
 	if err != nil {
-		glog.V(4).Info(errors.Wrap(err, "HTTPGet DumpRequest"))
+		glog.V(4).Info(errors.Wrap(err, "HTTPPostJSON DumpRequest"))
 	}
 
 	httpResp, err := p.c.Do(req)
@@ -126,7 +126,7 @@ func (p *HttpClient) HTTPPostJSON(url string, body *bytes.Buffer) ([]byte, error
 
 	respDump, err = httputil.DumpResponse(httpResp, true)
 	if err != nil {
-		glog.V(4).Info(errors.Wrap(err, "HTTPGet DumpResponse"))
+		glog.V(4).Info(errors.Wrap(err, "HTTPPostJSON DumpResponse"))
 	}
 	glog.V(4).Infof("---------- request -----------\n%s\n---------- response ----------\n%s", string(reqDump), string(respDump))
 
