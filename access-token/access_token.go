@@ -61,6 +61,7 @@ func (p *AccessTokenClient) getAccessToken(appId, appSecret string) (*AccessToke
 		accessToken.CreateAt = time.Now()
 		p.SwapTicket(accessToken)
 	}
+	glog.Infof("old access-token=%+v", accessToken)
 
 	respBody, err := p.Client.HTTPGet(fmt.Sprintf(tokenURL, appId, appSecret))
 	if err != nil {
@@ -86,8 +87,6 @@ func (p *AccessTokenClient) getAccessToken(appId, appSecret string) (*AccessToke
 	default:
 		newAccessToken.NextGet = newAccessToken.ExpiresIn
 	}
-
-	glog.Infof("old access-token=%+v", accessToken)
 	glog.Infof("new access-token=%+v", newAccessToken)
 
 	accessToken.Ticket = newAccessToken.Ticket
