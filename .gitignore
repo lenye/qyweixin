@@ -1,6 +1,7 @@
 # Folders
 .git
 .idea
+.vscode
 _test
 
 # Binaries for programs and plugins
