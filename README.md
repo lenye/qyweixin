@@ -18,7 +18,7 @@
       -http_client_connect_timeout duration
             http client connect timeout (default 5s)
       -http_client_request_timeout duration
-            http client request timeout (default 5s)
+            http client request timeout (default 3s)
       -log_backtrace_at value
             when logging hits line file:N, emit a stack trace
       -log_dir string
@@ -40,7 +40,7 @@
    
 ## 取access-token
 
-    GET /wx/qy/access-token
+    GET http://127.0.0.1:8000/wx/qy/access-token
 
     {
         "access_token": "qdjWc6kix6RrYfgUFNhDxdcC4EdzXLIUGlKFANJdHvTn5WcxyTyGtJeM2nZPEeHP1SxRWkNj8uqVXp4OIoavCxAD8h_WnR120bv2wDJSOcvfKV8OQaPzjUiI4u6uaelQsi_zOtOhdiFkwgzSeTCcRYWrovmn7KTONcNu-0qPC5Yr8y15FZHM0ol7uuiLocKDO0AMo5jNhBnj2MH1nsfX7xo1sbhyqFju04T7GTRckdko4xtxh8muMteMGAiBB0xNaM4jJHGBWakaaxXMnZgz4MNdb323GELWZDglcoXl8wg",
@@ -53,7 +53,7 @@
 
  企业微信的[消息类型及数据格式](http://qydev.weixin.qq.com/wiki/index.php?title=消息类型及数据格式)
 
-    POST /wx/qy/send/message
+    POST http://127.0.0.1:8000/wx/qy/send/message
 
     {
        "totag" : "1",
