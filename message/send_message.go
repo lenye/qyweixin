@@ -9,7 +9,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/pkg/errors"
 
-	api "github.com/lenye/qyweixin/internal/http"
+	"github.com/lenye/qyweixin/internal/api"
 )
 
 const sendMessageURL = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%s"

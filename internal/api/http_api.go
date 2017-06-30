@@ -1,4 +1,4 @@
-package http
+package api
 
 import (
 	"encoding/json"
@@ -10,9 +10,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type Decorator func(APIHandler) APIHandler
-
 type APIHandler func(http.ResponseWriter, *http.Request, httprouter.Params) (interface{}, error)
+
+type Decorator func(APIHandler) APIHandler
 
 type Err struct {
 	Code int
@@ -21,6 +21,16 @@ type Err struct {
 
 func (e Err) Error() string {
 	return e.Text
+}
+
+func Decorate(f APIHandler, ds ...Decorator) httprouter.Handle {
+	decorated := f
+	for _, decorate := range ds {
+		decorated = decorate(decorated)
+	}
+	return func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+		decorated(w, req, ps)
+	}
 }
 
 func V1(f APIHandler) APIHandler {
@@ -67,29 +77,17 @@ func RespondV1(w http.ResponseWriter, code int, data interface{}) {
 	w.Write(response)
 }
 
-func Decorate(f APIHandler, ds ...Decorator) httprouter.Handle {
-	decorated := f
-	for _, decorate := range ds {
-		decorated = decorate(decorated)
-	}
-	return func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-		decorated(w, req, ps)
-	}
-}
-
-func Log() Decorator {
-	return func(f APIHandler) APIHandler {
-		return func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) (interface{}, error) {
-			start := time.Now()
-			response, err := f(w, req, ps)
-			elapsed := time.Since(start)
-			status := 200
-			if e, ok := err.(Err); ok {
-				status = e.Code
-			}
-			glog.Infof("%d %s %s (%s) %s", status, req.Method, req.URL.RequestURI(), req.RemoteAddr, elapsed)
-			return response, err
+func Log(f APIHandler) APIHandler {
+	return func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) (interface{}, error) {
+		start := time.Now()
+		response, err := f(w, req, ps)
+		elapsed := time.Since(start)
+		status := 200
+		if e, ok := err.(Err); ok {
+			status = e.Code
 		}
+		glog.Infof("%d %s %s (%s) %s", status, req.Method, req.URL.RequestURI(), req.RemoteAddr, elapsed)
+		return response, err
 	}
 }
 

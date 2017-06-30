@@ -9,7 +9,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/julienschmidt/httprouter"
 
-	api "github.com/lenye/qyweixin/internal/http"
+	"github.com/lenye/qyweixin/internal/api"
 	"github.com/lenye/qyweixin/message"
 )
 

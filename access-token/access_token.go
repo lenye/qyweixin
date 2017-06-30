@@ -9,7 +9,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/pkg/errors"
 
-	"github.com/lenye/qyweixin/internal/http"
+	"github.com/lenye/qyweixin/internal/api"
 )
 
 const (
@@ -27,13 +27,13 @@ type AccessToken struct {
 
 type AccessTokenClient struct {
 	ticket   atomic.Value
-	Client   *http.HttpClient
+	Client   *api.HttpClient
 	QuitChan chan int
 }
 
 func NewAccessTokenClient(connectTimeout time.Duration, requestTimeout time.Duration) *AccessTokenClient {
 	p := &AccessTokenClient{
-		Client:   http.NewHttpClient(connectTimeout, requestTimeout),
+		Client:   api.NewHttpClient(connectTimeout, requestTimeout),
 		QuitChan: make(chan int),
 	}
 	p.SwapTicket(&AccessToken{})

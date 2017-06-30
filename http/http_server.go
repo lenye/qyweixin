@@ -5,7 +5,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
-	api "github.com/lenye/qyweixin/internal/http"
+	"github.com/lenye/qyweixin/internal/api"
 )
 
 type HttpServer struct {
@@ -14,7 +14,6 @@ type HttpServer struct {
 }
 
 func NewHTTPServer(ctx *ContextApp) *HttpServer {
-	httpStatusLog := api.Log()
 	router := httprouter.New()
 	router.HandleMethodNotAllowed = true
 	router.PanicHandler = api.LogPanicHandler()
@@ -25,8 +24,8 @@ func NewHTTPServer(ctx *ContextApp) *HttpServer {
 		router: router,
 	}
 
-	router.Handle("GET", "/wx/qy/access-token", api.Decorate(s.accessToken, httpStatusLog, api.V1))
-	router.Handle("POST", "/wx/qy/send/message", api.Decorate(s.sendMessage, httpStatusLog, api.V1))
+	router.Handle("GET", "/wx/qy/access-token", api.Decorate(s.accessToken, api.Log, api.V1))
+	router.Handle("POST", "/wx/qy/send/message", api.Decorate(s.sendMessage, api.Log, api.V1))
 
 	return s
 }
