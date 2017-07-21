@@ -93,7 +93,10 @@ func (p *AccessTokenClient) getAccessToken(appId, appSecret string) (*AccessToke
 	accessToken.ExpiresIn = newAccessToken.ExpiresIn
 	accessToken.NextGet = newAccessToken.NextGet
 	accessToken.CreateAt = newAccessToken.CreateAt
-
+	//fixed: WeiXin access token ExpiresIn<=0
+	if accessToken.NextGet <= 0 {
+		accessToken.NextGet = 1
+	}
 	p.SwapTicket(accessToken)
 	return accessToken, nil
 }
