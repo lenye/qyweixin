@@ -6,7 +6,7 @@ import (
 )
 
 //Binary 版本号
-const Binary = "0.01"
+const Binary = "0.02"
 
 //String 版本号
 func String(app string) string {

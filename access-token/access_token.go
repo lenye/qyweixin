@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	retryInterval = 10                                                                     //每隔10秒重试
+	retryInterval = 10 * 1000                                                              //每隔10秒重试
 	tokenURL      = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s" //企业微信token url
 )
 
@@ -79,13 +79,15 @@ func (p *AccessTokenClient) getAccessToken(appId, appSecret string) (*AccessToke
 	//刷新策略
 	switch {
 	case newAccessToken.ExpiresIn >= 60*60:
-		newAccessToken.NextGet = newAccessToken.ExpiresIn - 30*60
+		newAccessToken.NextGet = (newAccessToken.ExpiresIn - 30*60) * 1000
 	case newAccessToken.ExpiresIn >= 30*60:
-		newAccessToken.NextGet = newAccessToken.ExpiresIn - 10*60
+		newAccessToken.NextGet = (newAccessToken.ExpiresIn - 10*60) * 1000
 	case newAccessToken.ExpiresIn >= 10*60:
-		newAccessToken.NextGet = newAccessToken.ExpiresIn - 60
+		newAccessToken.NextGet = (newAccessToken.ExpiresIn - 60) * 1000
+	case newAccessToken.ExpiresIn <= 6:
+		newAccessToken.NextGet = 100
 	default:
-		newAccessToken.NextGet = newAccessToken.ExpiresIn
+		newAccessToken.NextGet = (newAccessToken.ExpiresIn - 6) * 1000
 	}
 	glog.Infof("new access-token=%+v", newAccessToken)
 
@@ -93,10 +95,6 @@ func (p *AccessTokenClient) getAccessToken(appId, appSecret string) (*AccessToke
 	accessToken.ExpiresIn = newAccessToken.ExpiresIn
 	accessToken.NextGet = newAccessToken.NextGet
 	accessToken.CreateAt = newAccessToken.CreateAt
-	//fixed: WeiXin access token ExpiresIn<=0
-	if accessToken.NextGet <= 0 {
-		accessToken.NextGet = 1
-	}
 	p.SwapTicket(accessToken)
 	return accessToken, nil
 }
@@ -109,7 +107,7 @@ func (p *AccessTokenClient) Loop(appId, appSecret string) {
 	if err != nil {
 		glog.Error(err)
 	}
-	refreshInterval = time.Duration(newAccessToken.NextGet) * time.Second
+	refreshInterval = time.Duration(newAccessToken.NextGet) * time.Millisecond
 	glog.Infof("next access-token time.NewTicker=%v", refreshInterval)
 	timeTicker := time.NewTicker(refreshInterval)
 
@@ -120,7 +118,7 @@ func (p *AccessTokenClient) Loop(appId, appSecret string) {
 			if err != nil {
 				glog.Error(err)
 			}
-			refreshInterval = time.Duration(newAccessToken.NextGet) * time.Second
+			refreshInterval = time.Duration(newAccessToken.NextGet) * time.Millisecond
 			glog.Infof("next access-token time.NewTicker=%v", refreshInterval)
 			timeTicker.Stop()
 			timeTicker = time.NewTicker(refreshInterval)
