@@ -1,4 +1,4 @@
-# 企业微信的access token中控服务和发消息
+# 企业微信: 发消息网关, access token中控服务
 
  https://github.com/lenye/qyweixin
  
@@ -37,24 +37,17 @@
  
     qy-weixin -app_id=XXXXXXXXXXX -app_secret=XXXXXXXXXXX -logtostderr
     
-   
-## 取access-token
-
-    GET http://127.0.0.1:8000/wx/qy/access-token
-
-    {
-        "access_token": "qdjWc6kix6RrYfgUFNhDxdcC4EdzXLIUGlKFANJdHvTn5WcxyTyGtJeM2nZPEeHP1SxRWkNj8uqVXp4OIoavCxAD8h_WnR120bv2wDJSOcvfKV8OQaPzjUiI4u6uaelQsi_zOtOhdiFkwgzSeTCcRYWrovmn7KTONcNu-0qPC5Yr8y15FZHM0ol7uuiLocKDO0AMo5jNhBnj2MH1nsfX7xo1sbhyqFju04T7GTRckdko4xtxh8muMteMGAiBB0xNaM4jJHGBWakaaxXMnZgz4MNdb323GELWZDglcoXl8wg",
-        "expires_in": 7200,
-        "create_at": "2017-06-22T14:56:40.3631589+08:00"
-    }
-    
 
 ## 发消息
 
- 企业微信的[消息类型及数据格式](http://qydev.weixin.qq.com/wiki/index.php?title=消息类型及数据格式)
+ 消息格式查看企业微信的[消息类型及数据格式](https://work.weixin.qq.com/api/doc#10167)
 
+ 请求地址:
+  
     POST http://127.0.0.1:8000/wx/qy/send/message
-
+ 
+ 请求示例:
+ 
     {
        "totag" : "1",
        "msgtype" : "text",
@@ -64,12 +57,30 @@
        }
     }
     
+返回示例:
     
     {
         "errcode": 0,
         "errmsg": "ok",
         "invaliduser": ""
     }
+
+
+## 获取access token
+
+请求地址:
+
+    GET http://127.0.0.1:8000/wx/qy/access-token
+
+返回示例:
+
+    {
+        "access_token": "qdjWc6kix6RrYfgUFNhDxdcC4EdzXLIUGlKFANJdHvTn5WcxyTyGtJeM2nZPEeHP1SxRWkNj8uqVXp4OIoavCxAD8h_WnR120bv2wDJSOcvfKV8OQaPzjUiI4u6uaelQsi_zOtOhdiFkwgzSeTCcRYWrovmn7KTONcNu-0qPC5Yr8y15FZHM0ol7uuiLocKDO0AMo5jNhBnj2MH1nsfX7xo1sbhyqFju04T7GTRckdko4xtxh8muMteMGAiBB0xNaM4jJHGBWakaaxXMnZgz4MNdb323GELWZDglcoXl8wg",
+        "expires_in": 7200,
+        "create_at": "2017-06-22T14:56:40.3631589+08:00"
+    }
+    
+
     
     
 ## License

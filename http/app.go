@@ -33,7 +33,7 @@ func NewQYWeiXinApp(opt *Option) *QYWeiXinApp {
 	}
 	p.swapOption(opt)
 
-	glog.Info(version.String("qy weixin"))
+	glog.Info(version.String("qy-weixin"))
 
 	return p
 }
