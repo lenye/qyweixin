@@ -25,6 +25,12 @@ type AccessToken struct {
 	CreateAt  time.Time `json:"create_at"`    //取得凭证的时间
 }
 
+//ResponseError 响应操作错误信息
+type ResponseError struct {
+	ErrorCode    int64  `json:"errcode"`
+	ErrorMessage string `json:"errmsg"`
+}
+
 type AccessTokenClient struct {
 	ticket   atomic.Value
 	Client   *api.HttpClient
@@ -66,35 +72,44 @@ func (p *AccessTokenClient) getAccessToken(appId, appSecret string) (*AccessToke
 	respBody, err := p.Client.HTTPGet(fmt.Sprintf(tokenURL, appId, appSecret))
 	if err != nil {
 		accessToken.NextGet = retryInterval
-		return accessToken, errors.Wrap(err, "getAccessToken HTTPGet")
+		return accessToken, errors.Wrap(err, "getAccessToken failed")
 	}
 
-	var newAccessToken AccessToken
-	err = json.Unmarshal(respBody, &newAccessToken)
+	var response struct {
+		ResponseError
+		AccessToken
+	}
+	err = json.Unmarshal(respBody, &response)
 	if err != nil {
 		accessToken.NextGet = retryInterval
-		return accessToken, errors.Wrap(err, "getAccessToken json.Unmarshal")
+		return accessToken, errors.Wrap(err, "getAccessToken json.Unmarshal failed")
 	}
-	newAccessToken.CreateAt = time.Now()
+
+	if response.ErrorCode != 0 {
+		accessToken.NextGet = retryInterval
+		return accessToken, errors.Wrapf(err, "getAccessToken response errcode: %d, errmsg: %s", response.ErrorCode, response.ErrorMessage)
+	}
+
+	response.CreateAt = time.Now()
 	//刷新策略
 	switch {
-	case newAccessToken.ExpiresIn >= 60*60:
-		newAccessToken.NextGet = (newAccessToken.ExpiresIn - 30*60) * 1000
-	case newAccessToken.ExpiresIn >= 30*60:
-		newAccessToken.NextGet = (newAccessToken.ExpiresIn - 10*60) * 1000
-	case newAccessToken.ExpiresIn >= 10*60:
-		newAccessToken.NextGet = (newAccessToken.ExpiresIn - 60) * 1000
-	case newAccessToken.ExpiresIn <= 6:
-		newAccessToken.NextGet = 100
+	case response.ExpiresIn >= 60*60:
+		response.NextGet = (response.ExpiresIn - 30*60) * 1000
+	case response.ExpiresIn >= 30*60:
+		response.NextGet = (response.ExpiresIn - 10*60) * 1000
+	case response.ExpiresIn >= 10*60:
+		response.NextGet = (response.ExpiresIn - 60) * 1000
+	case response.ExpiresIn <= 6:
+		response.NextGet = 100
 	default:
-		newAccessToken.NextGet = (newAccessToken.ExpiresIn - 6) * 1000
+		response.NextGet = (response.ExpiresIn - 6) * 1000
 	}
-	glog.Infof("new access-token=%+v", newAccessToken)
+	glog.Infof("new access-token=%+v", response.AccessToken)
 
-	accessToken.Ticket = newAccessToken.Ticket
-	accessToken.ExpiresIn = newAccessToken.ExpiresIn
-	accessToken.NextGet = newAccessToken.NextGet
-	accessToken.CreateAt = newAccessToken.CreateAt
+	accessToken.Ticket = response.Ticket
+	accessToken.ExpiresIn = response.ExpiresIn
+	accessToken.NextGet = response.NextGet
+	accessToken.CreateAt = response.CreateAt
 	p.SwapTicket(accessToken)
 	return accessToken, nil
 }
