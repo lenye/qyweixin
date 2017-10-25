@@ -6,7 +6,7 @@ import (
 )
 
 //Binary 版本号
-const Binary = "0.02"
+const Binary = "0.03"
 const url = "https://github.com/lenye/qyweixin"
 
 //String 版本号
